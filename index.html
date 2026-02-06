@@ -170,7 +170,9 @@
     music.play();
 
     // CHANGE THIS to your photo filename
-    document.body.style.background = "url('us.jpg') center/cover no-repeat";
+    document.body.style.backgroundImage = "url('us.jpg')";
+    document.body.style.backgroundSize = "cover";
+    document.body.style.backgroundPosition = "center";
 
     startCountdown();
   });
