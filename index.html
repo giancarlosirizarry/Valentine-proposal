@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Valentine</title>
+  <title>Mi San Valentín</title>
   <style>
     body {
       margin: 0;
@@ -15,19 +15,23 @@
       align-items: center;
       color: white;
       overflow: hidden;
+      transition: background 1s ease-in-out;
+      background-size: cover;
+      background-position: center;
     }
 
     .container {
       text-align: center;
-      background: rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.12);
       padding: 50px;
-      border-radius: 20px;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      border-radius: 24px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+      max-width: 520px;
     }
 
     h1 {
-      font-size: 3rem;
+      font-size: 2.7rem;
       margin-bottom: 10px;
     }
 
@@ -42,29 +46,26 @@
       font-size: 1.2rem;
       border-radius: 50px;
       cursor: pointer;
-      transition: 0.3s;
+      transition: 0.25s ease;
       margin: 10px;
     }
 
     #yesBtn {
       background: white;
       color: #ff4d6d;
-    }
-
-    #yesBtn:hover {
-      transform: scale(1.1);
+      transform: scale(1);
     }
 
     #noBtn {
       background: transparent;
       border: 2px solid white;
       color: white;
-      position: relative;
+      position: absolute;
     }
 
     .heart {
       position: absolute;
-      color: rgba(255,255,255,0.7);
+      color: rgba(255,255,255,0.8);
       animation: float 6s linear infinite;
       font-size: 20px;
     }
@@ -87,7 +88,13 @@
     #message {
       font-size: 2rem;
       margin-top: 20px;
-      animation: fadeIn 2s ease forwards;
+      animation: fadeIn 1.5s ease forwards;
+    }
+
+    #countdown {
+      font-size: 1.6rem;
+      margin-top: 15px;
+      font-weight: bold;
     }
 
     @keyframes fadeIn {
@@ -95,37 +102,77 @@
       to {opacity: 1;}
     }
 
+    .music-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(255,255,255,0.25);
+      border-radius: 50px;
+      padding: 10px 18px;
+      font-size: 0.9rem;
+      backdrop-filter: blur(6px);
+    }
+
   </style>
 </head>
 <body>
 
-<div class="container">
-  <h1>Quieres ser mi date de San Valentín? ❤️</h1>
-  </p>No hay flor mas hermosa que tú en el jardín. </p>
+<!-- MUSIC -->
+<audio id="bgMusic" loop>
+  <source src="ordinary.mp3" type="audio/mpeg">
+</audio>
 
-  <button id="yesBtn">Si 💘</button>
+<button class="music-btn" onclick="startMusic()">🎵 Tocar música</button>
+
+<div class="container">
+  <h1>¿Quieres ser mi date de San Valentín? ❤️</h1>
+  <p>No hay flor más hermosa que tú en el jardín.</p>
+
+  <button id="yesBtn">Sí 💘</button>
   <button id="noBtn">No</button>
 
-  <div id="message" class="hidden">Sabía que eramos el uno para el otro. Te amo! ❤️</div>
+  <div id="message" class="hidden">Sabía que éramos el uno para el otro. ¡Te amo! ❤️</div>
+  <div id="countdown" class="hidden"></div>
 </div>
 
 <script>
   const noBtn = document.getElementById('noBtn');
   const yesBtn = document.getElementById('yesBtn');
   const message = document.getElementById('message');
+  const music = document.getElementById('bgMusic');
+  const countdownEl = document.getElementById('countdown');
 
-  noBtn.addEventListener('mouseover', () => {
+  let yesScale = 1;
+
+  function moveNoButton() {
     const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
     const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
 
-    noBtn.style.position = 'absolute';
     noBtn.style.left = x + 'px';
     noBtn.style.top = y + 'px';
+
+    // Make YES bigger every time
+    yesScale += 0.2;
+    yesBtn.style.transform = `scale(${yesScale})`;
+  }
+
+  noBtn.addEventListener('mouseover', moveNoButton);
+
+  noBtn.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    moveNoButton();
   });
 
   yesBtn.addEventListener('click', () => {
     message.classList.remove('hidden');
-    createHearts(30);
+    countdownEl.classList.remove('hidden');
+    createHearts(40);
+    music.play();
+
+    // CHANGE THIS to your photo filename
+    document.body.style.background = "url('us.jpg') center/cover no-repeat";
+
+    startCountdown();
   });
 
   function createHearts(num) {
@@ -140,6 +187,37 @@
 
       setTimeout(() => heart.remove(), 6000);
     }
+  }
+
+  function startMusic() {
+    music.play();
+  }
+
+  function startCountdown() {
+    const now = new Date();
+    let year = now.getFullYear();
+
+    let valentines = new Date(year, 1, 14); // Feb = 1
+
+    // If Valentine's already passed this year
+    if (now > valentines) {
+      valentines = new Date(year + 1, 1, 14);
+    }
+
+    function updateCountdown() {
+      const current = new Date();
+      const diff = valentines - current;
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+
+      countdownEl.innerHTML = `Faltan ${days}d ${hours}h ${minutes}m ${seconds}s para nuestro San Valentín ❤️`;
+    }
+
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
   }
 </script>
 
