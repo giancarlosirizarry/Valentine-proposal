@@ -56,11 +56,12 @@
       transform: scale(1);
     }
 
+    /* FIXED so it never leaves the viewport */
     #noBtn {
       background: transparent;
       border: 2px solid white;
       color: white;
-      position: absolute;
+      position: fixed;
     }
 
     .heart {
@@ -117,7 +118,6 @@
 </head>
 <body>
 
-<!-- MUSIC -->
 <audio id="bgMusic" loop>
   <source src="ordinary.mp3" type="audio/mpeg">
 </audio>
@@ -145,13 +145,17 @@
   let yesScale = 1;
 
   function moveNoButton() {
-    const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
-    const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
+    const padding = 20; // keeps button away from edges
+
+    const maxX = window.innerWidth - noBtn.offsetWidth - padding;
+    const maxY = window.innerHeight - noBtn.offsetHeight - padding;
+
+    const x = Math.max(padding, Math.random() * maxX);
+    const y = Math.max(padding, Math.random() * maxY);
 
     noBtn.style.left = x + 'px';
     noBtn.style.top = y + 'px';
 
-    // Make YES bigger every time
     yesScale += 0.2;
     yesBtn.style.transform = `scale(${yesScale})`;
   }
@@ -169,7 +173,6 @@
     createHearts(40);
     music.play();
 
-    // CHANGE THIS to your photo filename
     document.body.style.backgroundImage = "url('us.JPG')";
     document.body.style.backgroundSize = "cover";
     document.body.style.backgroundPosition = "center";
@@ -199,9 +202,8 @@
     const now = new Date();
     let year = now.getFullYear();
 
-    let valentines = new Date(year, 1, 14); // Feb = 1
+    let valentines = new Date(year, 1, 14);
 
-    // If Valentine's already passed this year
     if (now > valentines) {
       valentines = new Date(year + 1, 1, 14);
     }
