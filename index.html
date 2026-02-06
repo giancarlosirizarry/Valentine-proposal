@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mi San Valentín</title>
+
   <style>
     body {
       margin: 0;
@@ -46,22 +47,27 @@
       font-size: 1.2rem;
       border-radius: 50px;
       cursor: pointer;
-      transition: 0.25s ease;
+      transition: 0.4s ease;
       margin: 10px;
     }
 
     #yesBtn {
       background: white;
       color: #ff4d6d;
-      transform: scale(1);
     }
 
-    /* FIXED so it never leaves the viewport */
+    /* stays inside screen */
     #noBtn {
       background: transparent;
       border: 2px solid white;
       color: white;
       position: fixed;
+    }
+
+    /* fade animation */
+    .fade-out {
+      opacity: 0;
+      transform: scale(0.6);
     }
 
     .heart {
@@ -143,9 +149,12 @@
   const countdownEl = document.getElementById('countdown');
 
   let yesScale = 1;
+  let accepted = false; // stops movement after yes
 
   function moveNoButton() {
-    const padding = 20; // keeps button away from edges
+    if (accepted) return;
+
+    const padding = 20;
 
     const maxX = window.innerWidth - noBtn.offsetWidth - padding;
     const maxY = window.innerHeight - noBtn.offsetHeight - padding;
@@ -161,13 +170,24 @@
   }
 
   noBtn.addEventListener('mouseover', moveNoButton);
-
   noBtn.addEventListener('touchstart', (e) => {
     e.preventDefault();
     moveNoButton();
   });
 
   yesBtn.addEventListener('click', () => {
+
+    accepted = true;
+
+    // smooth fade
+    yesBtn.classList.add("fade-out");
+    noBtn.classList.add("fade-out");
+
+    setTimeout(() => {
+      yesBtn.style.display = "none";
+      noBtn.style.display = "none";
+    }, 400);
+
     message.classList.remove('hidden');
     countdownEl.classList.remove('hidden');
     createHearts(40);
@@ -217,7 +237,8 @@
       const minutes = Math.floor((diff / (1000 * 60)) % 60);
       const seconds = Math.floor((diff / 1000) % 60);
 
-      countdownEl.innerHTML = `Faltan ${days}d ${hours}h ${minutes}m ${seconds}s para nuestro San Valentín ❤️`;
+      countdownEl.innerHTML =
+        `Faltan ${days}d ${hours}h ${minutes}m ${seconds}s para nuestro San Valentín ❤️`;
     }
 
     updateCountdown();
